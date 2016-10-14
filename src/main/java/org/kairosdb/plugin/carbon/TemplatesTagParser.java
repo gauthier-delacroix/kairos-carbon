@@ -9,14 +9,23 @@ import java.util.Arrays;
 public class TemplatesTagParser implements TagParser
 {
 	public static final String TEMPLATES_LIST_PROP = "kairosdb.carbon.templatestagparser.templates";
+	private static final String METRIC_TTL = "kairosdb.carbon.ttl";
+	private static final String METRIC_INVALID_TTL = "kairosdb.carbon.invalidTtl";
 
 	private String m_templates;
+	private int invalidTtl = 0;
+	private int ttl = 0;
 
 	@Inject
 	public TemplatesTagParser(
-		@Named(TEMPLATES_LIST_PROP)String templates)
+		@Named(TEMPLATES_LIST_PROP)String templates,
+		@Named(METRIC_INVALID_TTL)int invalidTtlValue,
+		@Named(METRIC_TTL)int ttlValue)
 	{
 		m_templates = templates;
+
+		invalidTtl = invalidTtlValue;
+		ttl = ttlValue;
 
 		Templates.parse(m_templates);
 	}
@@ -37,6 +46,7 @@ public class TemplatesTagParser implements TagParser
 				ret = invalidMetric(metricName, "does not match metric name pattern", template);
 			} else {
 				ret = template.addTags(new CarbonMetric(targetMetric), metricName);
+				ret.setTtl(ttl);
 				if (ret == null) {
 					ret = invalidMetric(metricName, "does not match tags pattern", template);
 				}
@@ -51,6 +61,7 @@ public class TemplatesTagParser implements TagParser
 		CarbonMetric ret = new CarbonMetric("invalidMetrics");
 		ret.addTag("metricName", metricName);
 		ret.addTag("cause", cause);
+		ret.setTtl(invalidTtl);
 		return ret;
 	}
 

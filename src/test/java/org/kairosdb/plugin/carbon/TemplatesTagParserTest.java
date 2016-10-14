@@ -34,6 +34,7 @@ import static org.mockito.Mockito.verify;
 public class TemplatesTagParserTest
 {
 	private final static int CARBON_PORT = 2003;
+	private final int ZERO_TTL = 0;
 
 	private KairosDatastore m_datastore;
 	private CarbonTextServer m_server;
@@ -49,7 +50,7 @@ public class TemplatesTagParserTest
 			"^test2.metric .metric.host.metric* [.,_];" +
 			"^test3.metric .metric.host.metric* type=static";
 
-		TemplatesTagParser templatesTagParser = new TemplatesTagParser(m_templates);
+		TemplatesTagParser templatesTagParser = new TemplatesTagParser(m_templates, ZERO_TTL, ZERO_TTL);
 
 		m_server = new CarbonTextServer(m_datastore, templatesTagParser, CARBON_PORT);
 		m_server.start();
@@ -77,7 +78,7 @@ public class TemplatesTagParserTest
 
 		verify(m_datastore, timeout(5000).times(1))
 				.putDataPoint("metric.name", tags,
-						new LongDataPoint(now * 1000, 1234));
+						new LongDataPoint(now * 1000, 1234),ZERO_TTL);
 	}
 
 	@Test
@@ -93,7 +94,7 @@ public class TemplatesTagParserTest
 
 		verify(m_datastore, timeout(5000).times(1))
 				.putDataPoint("metric_name", tags,
-						new LongDataPoint(now * 1000, 1234));
+						new LongDataPoint(now * 1000, 1234),ZERO_TTL);
 	}
 
 	@Test
@@ -110,7 +111,7 @@ public class TemplatesTagParserTest
 
 		verify(m_datastore, timeout(5000).times(1))
 				.putDataPoint("metric.name", tags,
-						new LongDataPoint(now * 1000, 1234));
+						new LongDataPoint(now * 1000, 1234),ZERO_TTL);
 	}
 
 	@Test
@@ -127,7 +128,7 @@ public class TemplatesTagParserTest
 
 		verify(m_datastore, timeout(5000).times(1))
 				.putDataPoint("invalidMetrics", tags,
-						new LongDataPoint(now * 1000, 1234));
+						new LongDataPoint(now * 1000, 1234),ZERO_TTL);
 	}
 
 	@Test
@@ -145,6 +146,6 @@ public class TemplatesTagParserTest
 
 		verify(m_datastore, timeout(5000).times(1))
 				.putDataPoint("invalidMetrics", tags,
-						new LongDataPoint(now * 1000, 1234));
+						new LongDataPoint(now * 1000, 1234),ZERO_TTL);
 	}
 }
